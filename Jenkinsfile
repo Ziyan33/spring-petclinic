@@ -15,9 +15,10 @@ pipeline {
         }
     }
 
-    post {
-        always {
-            publishHTML([allowMissing: false, alwaysLinkToLastBuild: false, keepAll: true, reportDir: 'target/site/jacoco', reportFiles: 'index.html', reportName: 'Jacoco Code Coverage Report', reportTitle: 'Petclinic'])
-        }
-    }
+   post {
+       always {
+           publishHTML([allowMissing: false, alwaysLinkToLastBuild: false, keepAll: true, reportDir: 'target/site/jacoco', reportFiles: 'index.html', reportNames: 'Jacoco Code Coverage Report', reportTitles: 'Petclinic'])
+       }
+   }
+
 }
