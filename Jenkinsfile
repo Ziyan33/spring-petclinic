@@ -5,9 +5,7 @@ pipeline {
         cron('H/10 * * * 1')
     }
 
-    tools {
-        // Define tools if needed, for instance, maven 'Maven_3_6_3'
-    }
+
 
  stages {
         stage('Initialize') {
