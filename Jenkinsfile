@@ -2,23 +2,45 @@ pipeline {
     agent any
 
     triggers {
-        cron('H 10 * * 1') // Trigger every 10 minutes on Monday
+        cron('H/10 * * * 1')
     }
 
-    stages {
-        stage('Build and Test') {
+    tools {
+        // Define tools if needed, for instance, maven 'Maven_3_6_3'
+    }
+
+ stages {
+        stage('Initialize') {
             steps {
-                bat 'git clone https://github.com/[your-github-username]/spring-petclinic.git'
-                bat 'mvn clean package'
-                jacoco()
+                echo 'Initializing...'
+            }
+        }
+
+        stage('Build') {
+            steps {
+                echo 'Building...'
+                bat 'mvn clean package -DskipTests'
+            }
+        }
+
+        stage('Test') {
+            steps {
+                echo 'Testing...'
+                bat 'mvn test'
+            }
+        }
+
+        stage('Generate Jacoco Report') {
+            steps {
+                echo 'Generating Jacoco Coverage Report...'
+                bat 'mvn jacoco:report'
             }
         }
     }
 
-   post {
-       always {
-           publishHTML([allowMissing: false, alwaysLinkToLastBuild: false, keepAll: true, reportDir: 'target/site/jacoco', reportFiles: 'index.html', reportNames: 'Jacoco Code Coverage Report', reportTitles: 'Petclinic'])
-       }
-   }
-
+    post {
+        always {
+            echo 'Pipeline execution is complete.'
+        }
+    }
 }
