@@ -2,43 +2,22 @@ pipeline {
     agent any
 
     triggers {
-        cron('H/10 * * * 1')
+        cron('H 10 * * 1') // Trigger every 10 minutes on Monday
     }
 
     stages {
-        stage('Build') {
+        stage('Build and Test') {
             steps {
-                script {
-                    // Use Maven to build the project. Adjust the command for Windows if necessary.
-                    bat 'mvn clean package'
-                }
-            }
-        }
-
-        stage('Code Coverage') {
-            steps {
-                script {
-                    // Generate code coverage report with Jacoco. Adjust the command for Windows if necessary.
-                    bat 'mvn test jacoco:report'
-                }
+                bat 'git clone https://github.com/[your-github-username]/spring-petclinic.git'
+                bat 'mvn clean package'
+                jacoco()
             }
         }
     }
 
     post {
         always {
-            // Archive the build artifacts (e.g., JAR files)
-            archiveArtifacts artifacts: '**/target/*.jar', fingerprint: true
-            // Archive the Jacoco reports
-            jacoco(
-                execPattern: '**/target/jacoco.exec',
-                classPattern: '**/classes',
-                sourcePattern: '**/src/main/java',
-                inclusionPattern: '**/*.*',
-                exclusionPattern: ''
-            )
-            // Optionally, you could publish JUnit test results if you have them
-            junit '**/target/surefire-reports/*.xml'
+            publishHTML([allowMissing: false, alwaysLinkToLastBuild: false, keepAll: true, reportDir: 'target/site/jacoco', reportFiles: 'index.html', reportName: 'Jacoco Code Coverage Report', reportTitle: 'Petclinic'])
         }
     }
 }
